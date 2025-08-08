@@ -127,9 +127,6 @@ To run this project,
     ├── README.md 
     └── requirements.txt
 
-## License
-
-Distributed under the MIT License. See LICENSE.txt for more information.
 
 ## Author  
 
