@@ -50,7 +50,7 @@ Ensure you have Python 3.8+ installed.
 
 1.  Clone this repository:
     ```bash
-    git clone https://github.com/jstmahi/Financial-Risk-Analysis.git
+    git clone https://github.com/jstmahi/Financial-Risk-Analysis-and-Modeling.git
     cd Financial-Risk-Analysis
     ```
 2.  Install the required dependencies:
