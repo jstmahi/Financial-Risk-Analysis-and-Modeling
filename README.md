@@ -1,139 +1,92 @@
-# Credit Risk Modelling | Calculation of PD, LGD, EDA and EL with Machine Learning in Python  
+# Financial Risk Analysis and Expected Loss Pipeline
 
-![python-shield](https://forthebadge.com/images/badges/made-with-python.svg)
+## Overview
 
-## Table of contents
-* [Background](#background)
-* [Project](#project)
-* [Pipeline](#pipeline)
-* [Key documents](#key-documents)
-* [Datasets](#datasets)
-* [Model performances](#model-performances)  
-* [Deliverables](#deliverables)
-* [Getting Started](#getting-started)
-* [Technologies](#technologies)
-* [Top-directory layout](#top-directory-layout)
-* [License](#license)
-* [Author](#author)
+This repository contains an end-to-end, machine learning-powered credit risk modeling pipeline. Designed in compliance with the Internal Ratings-Based (IRB) approach of the Basel Accords, this project calculates **Expected Loss (EL)** for consumer loans.
 
-## Background
+The pipeline bridges the gap between raw financial data and actionable business intelligence, translating complex statistical probabilities into an intuitive, production-ready Credit Scorecard. This is particularly relevant for operations and data analysis within the banking and fintech sectors, where assessing creditworthiness accurately dictates capital reserve requirements.
 
-Credit risk modeling is important for financial institutions. It represents the risk of borrower not being able to pay back the loan amount, credit card or other types of loans. In some cases, borrowers can pay only partial of the amount and the principal amount and interest amount are not paid. Both statistics and machine learning play an important role in handling big data and provide statistical modeling. 
+## Business Value
 
-## Pipeline  
+Financial institutions must accurately estimate the risk of borrower default to maintain adequate capital reserves. This project calculates Expected Loss using the standard risk equation:
 
+**Expected Loss (EL) = Probability of Default (PD) × Loss Given Default (LGD) × Exposure at Default (EAD)**
 
-<img src= ".pipeline_sum.jpg">
+By moving beyond standard accuracy metrics and generating a business-facing Scorecard, this project allows credit operations teams to establish clear cutoff scores for loan approvals and rejections based on their risk appetite.
 
-## Project
+## Project Architecture
 
-This project is an AI-powered project to model the credit risk in compliance with the Basel accords.
+The project is structured sequentially across four main stages:
 
-The goal is to build a credit risk model by using Loan Data to provide a scorecard for a daily use as well as a pipeline to calculate exposure loss.
+### 1\. Data Preprocessing & Feature Engineering
 
-Here is a step-by-step instruction as also in compliance with the Basel II requirements:
+  * **Weight of Evidence (WoE) & Information Value (IV):** Continuous and categorical variables are binned using fine and coarse classing to handle non-linear relationships and missing data effectively.
+  * **Dummy Variable Creation:** Significant variables are transformed into dummy variables for stable logistic regression modeling.
 
-*  Preprocessing - Converting columns into dummy variables by fine and coarse classing
-*  Calculate the PD model with logistic regression
-*  Based on PD model, provide a practical scorecard in csv format
-*  Construct LGD model with beta regression
-*  Build EAD model with linear regression
-*  Calculate the exposure loss after obtaining all models
-*  Check the models if they are still doing good with the recent credit risk modeling.
+### 2\. Probability of Default (PD) & Credit Scorecard
 
-Please note that this notebook includes my revisions/additions to the credit risk course on [365 Learning](https://365datascience.com/courses/credit-risk-modeling-in-python/).
+  * **PD Modeling:** A Logistic Regression model predicts the likelihood of a borrower defaulting within a one-year timeframe.
+  * **Scorecard Generation:** Statistical coefficients are scaled into a human-readable credit scorecard. This allows a layperson to interpret how specific borrower attributes (e.g., annual income, employment length) impact their final credit score.
 
-## Key documents
-	
-Notebooks shown below:  
-**L01** - A preprocessing notebook and feature engineering  
-**L02** - A notebook on modelling probability of default (PD), delivering scorecard and calculating cutoff rate   
-**L03** - A notebook on modelling loss given default (LGD), exposure at default (EAD) and expected loss (EL)  
-**L04** - A notebook on checking population stability index  
+### 3\. LGD & EAD Modeling
 
-## Datasets
+  * **Loss Given Default (LGD):** Modeled using a two-stage approach:
+    1.  Logistic Regression to predict if any recovery is possible (\>0).
+    2.  Linear Regression to estimate the actual recovery rate percentage.
+  * **Exposure at Default (EAD):** Predicts the Credit Conversion Factor (CCF) to determine the total exposure amount at the exact time of default.
 
-The dataset comes from Lending Club. It is a large US peer-to-peer lending company. Different versions of this dataset existing, here the data was taken from a version available on [kaggle.com](https://www.kaggle.com/wendykan/lending-club-loan-data/version/1) 
+### 4\. Model Monitoring (Population Stability Index)
 
-It contains all available data for more than 800,000 consumer loans issued from 2007 to 2015.
+  * **PSI Check:** Evaluates whether the distribution of new loan applicants has shifted significantly compared to the training data. This automated check is crucial for determining when models have degraded and require retraining.
 
-The data was then divided into two: one including data from 2007 to 2014 and another including data of 2015. Assuming that data from 2007 to 2014 are available at the moment when Expected Loss models are built. Then, the models are checked with more recent data (data on 2015) to evaluate whether the applications we have received after building the Probability of Default (PD) model have similar characteristics with the applications or not.  
+## Repository Structure
 
-## Model performances
-
-Following models are trained for the use in our case  
-1.  Probability of default (PD)  
-**Model**: Logistic regression  
-**Metrics**: Accuracy: 0.572 | Area under ROC: 0.684 > 0.50  
-
-2.  Loss given default (LGD)  
-**Model - Stage/step 1**: Logistic regression  
-**Metrics**: Accuracy: 0.595 | Area under ROC: 0.640 > 0.50  
-**Model - Stage/step 2**: Linear regression  
-**Metric**: Accuracy: 0.777
-
-3. Exposure at default (EAD)  
-**Model**: Linear regression  
-**Metric**: Accuracy: 0.658  
-
-*Please note that further steps can be taken forward to improve the performance of models.*
-
-## Deliverables
-
-1. Scorecard, easy to interpret in comliance with the requirements    
-2. Dataframe to test the impact of cut off rates on the number of accepted borrowers for credit
-3. Models on loss given default (LGD), exposure at default (EAD) and expected loss (EL)  
-4. Schema to check the population stability index with the recent data  
-
-## Key documents
-	
-Notebooks  
-1 - A preprocessing notebook  
-2 - A notebook on selecting features for probability of default (PD) and modelling PD  
-3 - A notebook on modelling loss given default (LGD), exposure at default (EAD) and Expected Loss (EL)  
-4 - A notebook on checking population stability index  
-
-## Technologies
-
-Project is created with:
-* Python 3.8
-* Jupyter Notebook 6.4.12
-* Python libraries (see /requirements.txt)
-* VSCode 1.71.2
-
-Or, the github project can be readily loaded on [colab-google](https://colab.research.google.com) without any local installation. It is free and requires a signing up. There are instructions on how to load github repos on colab-google.
+```text
+├── L01_LoanData_CreditRisk_Preprocessing_PD.ipynb    # Data cleaning and WoE/IV binning
+├── L02_LoanData_CreditRisk_PD_Scorecard_Cutoffs.ipynb # Model training and Scorecard creation
+├── L03_LoanData_CreditRisk_LGD,_EAD_and_Expected_Loss.ipynb # LGD and EAD modeling
+├── L04_LoanData_CreditRisk_PSI_check.ipynb           # Model degradation monitoring
+├── functions.py                                      # Custom WoE and visualization functions
+├── features_refined.py                               # Final feature selection lists
+├── df_scorecard.csv                                  # Exported business scorecard
+├── loandata_keys.txt                                 # Data dictionary
+├── requirements.txt                                  # Project dependencies
+└── *.sav                                             # Serialized, deployment-ready models
+```
 
 ## Getting Started
 
-To run this project, 
-1. Clone the repo:
-   ```sh
-   git clone https://github.com/levist7/Credit_Risk_Modelling.git
-   ```
-2. Install [packages](#technologies)
+### Prerequisites
 
-3. Install python libraries
-   ```sh
-   pip3 install -r requirements.txt
-   ```
-   
-## Top-directory layout
+Ensure you have Python 3.8+ installed.
 
-    .
-    ├── NoteBooks               # Jupyter notebooks   
-    ├── src                     # Scripts on functions 
-    ├── data                    # Datasets (some data are stored in Gdrive)    
-    ├── LICENSE
-    ├── README.md 
-    └── requirements.txt
+### Installation
 
-## License
+1.  Clone this repository:
+    ```bash
+    git clone https://github.com/yourusername/Financial-Risk-Analysis.git
+    cd Financial-Risk-Analysis
+    ```
+2.  Install the required dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-Distributed under the MIT License. See LICENSE.txt for more information.
+### Execution
 
-## Author  
+The project is built using Jupyter Notebooks. To reproduce the pipeline, launch Jupyter and run the notebooks in sequential order from `L01` to `L04`:
 
-* [levist7](https://github.com/levist7)
+```bash
+jupyter notebook
+```
+
+## Future Enhancements
+
+  * **Application Development:** Wrapping the serialized `.sav` models into a lightweight web application or REST API (using Streamlit or FastAPI) to allow users to input borrower details and receive instant credit scores and Expected Loss calculations.
+  * **Code Modularization:** Refactoring notebook logic into object-oriented Python scripts for easier integration into automated CI/CD pipelines.
+
 ---
-Made with ❤️ in Paris
----
+
+## 👨‍💻 Architected By
+
+**Mahidhar Ramayanam** [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=flat-square&logo=linkedin)](https://linkedin.com/in/mahidharramayanam)
