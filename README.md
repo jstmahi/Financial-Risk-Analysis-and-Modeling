@@ -39,20 +39,6 @@ The project is structured sequentially across four main stages:
 
   * **PSI Check:** Evaluates whether the distribution of new loan applicants has shifted significantly compared to the training data. This automated check is crucial for determining when models have degraded and require retraining.
 
-## Repository Structure
-
-```text
-├── L01_LoanData_CreditRisk_Preprocessing_PD.ipynb    # Data cleaning and WoE/IV binning
-├── L02_LoanData_CreditRisk_PD_Scorecard_Cutoffs.ipynb # Model training and Scorecard creation
-├── L03_LoanData_CreditRisk_LGD,_EAD_and_Expected_Loss.ipynb # LGD and EAD modeling
-├── L04_LoanData_CreditRisk_PSI_check.ipynb           # Model degradation monitoring
-├── functions.py                                      # Custom WoE and visualization functions
-├── features_refined.py                               # Final feature selection lists
-├── df_scorecard.csv                                  # Exported business scorecard
-├── loandata_keys.txt                                 # Data dictionary
-├── requirements.txt                                  # Project dependencies
-└── *.sav                                             # Serialized, deployment-ready models
-```
 
 ## Getting Started
 
