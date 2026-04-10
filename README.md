@@ -1,71 +1,86 @@
-# Credit Risk Modelling | Calculation of PD, LGD, EDA and EL with Machine Learning in Python  
+# Financial Risk Analysis and Expected Loss Pipeline
 
-![python-shield](https://forthebadge.com/images/badges/made-with-python.svg)
+## Overview
 
-## Table of contents
-* [Background & Business Value](#background--business-value)
-* [Project](#project)
-* [Pipeline](#pipeline)
-* [Key documents](#key-documents)
-* [Datasets](#datasets)
-* [Model performances](#model-performances)  
-* [Deliverables](#deliverables)
-* [Getting Started](#getting-started)
-* [Technologies](#technologies)
-* [Top-directory layout](#top-directory-layout)
-* [License](#license)
-* [Author](#author)
+This repository contains an end-to-end, machine learning-powered credit risk modeling pipeline. Designed in compliance with the Internal Ratings-Based (IRB) approach of the Basel Accords, this project calculates **Expected Loss (EL)** for consumer loans.
 
-## Background & Business Value
+The pipeline bridges the gap between raw financial data and actionable business intelligence, translating complex statistical probabilities into an intuitive, production-ready Credit Scorecard. This is particularly relevant for operations and data analysis within the banking and fintech sectors, where assessing creditworthiness accurately dictates capital reserve requirements.
 
-Credit risk modeling is important for financial institutions. It represents the risk of a borrower not being able to pay back the loan amount, credit card, or other types of loans. 
+## Business Value
 
-**Business Value:** By automating the data preprocessing, feature engineering, and model evaluation workflows, this pipeline reduces manual intervention, speeds up credit approval decisioning, and continuously monitors for data drift. This ensures the models remain accurate over time, directly reducing financial risk exposure for the institution.
+Financial institutions must accurately estimate the risk of borrower default to maintain adequate capital reserves. This project calculates Expected Loss using the standard risk equation:
 
-## Pipeline  
+**Expected Loss (EL) = Probability of Default (PD) × Loss Given Default (LGD) × Exposure at Default (EAD)**
 
-<img src= ".pipeline_sum.jpg">
+By moving beyond standard accuracy metrics and generating a business-facing Scorecard, this project allows credit operations teams to establish clear cutoff scores for loan approvals and rejections based on their risk appetite.
 
-## Project
+## Project Architecture
 
-This project is an AI-powered automated workflow to model credit risk in compliance with the Basel accords.
+The project is structured sequentially across four main stages:
 
-The goal is to build a credit risk model by using Loan Data to provide a scorecard for daily use as well as a pipeline to calculate expected loss. While initial research was conducted in Jupyter Notebooks, the core logic has been modularized into Python scripts (`src/`) for autonomous execution.
+### 1\. Data Preprocessing & Feature Engineering
 
-Here is a step-by-step instruction as also in compliance with the Basel II requirements:
-* Preprocessing - Converting columns into dummy variables by fine and coarse classing
-* Calculate the Probability of Default (PD) for the accepted borrowers for credit
-* Models on loss given default (LGD), exposure at default (EAD) and expected loss (EL)  
-* Schema to check the population stability index (PSI) with the recent data to monitor drift.
+  * **Weight of Evidence (WoE) & Information Value (IV):** Continuous and categorical variables are binned using fine and coarse classing to handle non-linear relationships and missing data effectively.
+  * **Dummy Variable Creation:** Significant variables are transformed into dummy variables for stable logistic regression modeling.
 
-## Model performances
+### 2\. Probability of Default (PD) & Credit Scorecard
 
-The automated pipeline was trained and validated on over 800,000 loan records.
-* **Probability of Default (PD) Model:** Achieved an AUC-ROC score of **0.85**, demonstrating strong discriminative ability between defaulted and performing loans.
-* **Population Stability Index (PSI):** Automated drift monitoring calculated a PSI of **0.08** across key features, indicating that the recent data distribution is stable and no immediate model retraining is required.
+  * **PD Modeling:** A Logistic Regression model predicts the likelihood of a borrower defaulting within a one-year timeframe.
+  * **Scorecard Generation:** Statistical coefficients are scaled into a human-readable credit scorecard. This allows a layperson to interpret how specific borrower attributes (e.g., annual income, employment length) impact their final credit score.
 
-## Key documents
-	
-**Automated Scripts (Production)**
-* `main.py` - The entry-point script to run the end-to-end automated pipeline.
-* `Dockerfile` - Containerization setup for easy deployment.
+### 3\. LGD & EAD Modeling
 
-**Research Notebooks (Exploration)** 1 - A preprocessing notebook  
-2 - A notebook on selecting features for probability of default (PD) and modelling PD  
-3 - A notebook on modelling loss given default (LGD), exposure at default (EAD) and Expected Loss (EL)  
-4 - A notebook on checking population stability index  
+  * **Loss Given Default (LGD):** Modeled using a two-stage approach:
+    1.  Logistic Regression to predict if any recovery is possible (\>0).
+    2.  Linear Regression to estimate the actual recovery rate percentage.
+  * **Exposure at Default (EAD):** Predicts the Credit Conversion Factor (CCF) to determine the total exposure amount at the exact time of default.
 
-## Technologies
+### 4\. Model Monitoring (Population Stability Index)
 
-Project is created with:
-* Python 3.8
-* Docker
-* Jupyter Notebook 6.4.12
-* Python libraries (see /requirements.txt)
+  * **PSI Check:** Evaluates whether the distribution of new loan applicants has shifted significantly compared to the training data. This automated check is crucial for determining when models have degraded and require retraining.
+
+## Repository Structure
+
+```text
+├── L01_LoanData_CreditRisk_Preprocessing_PD.ipynb    # Data cleaning and WoE/IV binning
+├── L02_LoanData_CreditRisk_PD_Scorecard_Cutoffs.ipynb # Model training and Scorecard creation
+├── L03_LoanData_CreditRisk_LGD,_EAD_and_Expected_Loss.ipynb # LGD and EAD modeling
+├── L04_LoanData_CreditRisk_PSI_check.ipynb           # Model degradation monitoring
+├── functions.py                                      # Custom WoE and visualization functions
+├── features_refined.py                               # Final feature selection lists
+├── df_scorecard.csv                                  # Exported business scorecard
+├── loandata_keys.txt                                 # Data dictionary
+├── requirements.txt                                  # Project dependencies
+└── *.sav                                             # Serialized, deployment-ready models
+```
 
 ## Getting Started
 
-To run this project:
-1. Clone the repo:
-   ```sh
-   git clone [https://github.com/jstmahi/Financial-Risk-Analysis-and-Modeling.git](https://github.com/jstmahi/Financial-Risk-Analysis-and-Modeling.git)
+### Prerequisites
+
+Ensure you have Python 3.8+ installed.
+
+### Installation
+
+1.  Clone this repository:
+    ```bash
+    git clone https://github.com/yourusername/Financial-Risk-Analysis.git
+    cd Financial-Risk-Analysis
+    ```
+2.  Install the required dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+### Execution
+
+The project is built using Jupyter Notebooks. To reproduce the pipeline, launch Jupyter and run the notebooks in sequential order from `L01` to `L04`:
+
+```bash
+jupyter notebook
+```
+
+## Future Enhancements
+
+  * **Application Development:** Wrapping the serialized `.sav` models into a lightweight web application or REST API (using Streamlit or FastAPI) to allow users to input borrower details and receive instant credit scores and Expected Loss calculations.
+  * **Code Modularization:** Refactoring notebook logic into object-oriented Python scripts for easier integration into automated CI/CD pipelines.
